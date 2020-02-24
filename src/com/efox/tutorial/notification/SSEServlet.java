@@ -30,6 +30,15 @@ public class SSEServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		// TODO Auto-generated method stub
+		
+
+		String eventType = request.getParameter("event");
+		
+		if(eventType== null ) {
+			eventType="message";
+		}
+		
+		
 		response.setContentType("text/event-stream");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter printWriter = null;
@@ -37,8 +46,12 @@ public class SSEServlet extends HttpServlet {
 			try {
 				long sleepSec =2;
 				printWriter = response.getWriter();
+				
+				printWriter.print("event: "+eventType+"\n");
+				printWriter.print("id: "+ Calendar.getInstance().getTime()+"\n");
 				printWriter.print("data: "+"[next server time check event in "+sleepSec+" seconds]\n");
 				printWriter.print("data: "+"Time: "+ Calendar.getInstance().getTime()+"\n\n");
+
 				response.flushBuffer();
 				Thread.sleep(sleepSec*1000);
 			} catch (IOException | InterruptedException e) {

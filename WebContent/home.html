@@ -5,35 +5,66 @@
 		<title>Home Page</title>
 	</head>
 	<body>
-		<button id="startButton" onclick="start()">Start</button><br>
-		<button id="stopButton" onclick="stop()">Stop</button><br>
+		<button id="startMSGButton" onclick="startMessage()">Start Message</button><br>
+		<button id="startAddButton" onclick="startAdd()">Start Add</button><br>
+		
+		<button id="stopButton" onclick="stopMessage()">Stop Message</button><br>
+		<button id="stopButton" onclick="stopAdd()">Stop Add</button><br>
+		
 		<button id="clearButton" onclick="clearText()">Clear</button><br>
 		<textarea id="displayTextArea" readOnly="readOnly" rows="40" and cols="60"></textarea><br>
 		<script>
-			var eventSource = null;
-			function start(){
-				eventSource = new EventSource("http://localhost:8080/EFOXNotification/notification");
-				eventSource.onopen=open();
-				eventSource.onmessage=function(message){stream(message)};
-				eventSource.onerror=function(){errorHandle()};
+		var messageEventSource = null;
+		var addEventSource = null;
+			function startMessage(){
+				messageEventSource = new EventSource("http://localhost:8080/EFOXNotification/notification?event=message");
+				messageEventSource.onopen=open();
+				messageEventSource.onmessage=function(message){stream(message)};
+				//addEventSource.addEventListener("message", function(message){stream(message)});
+				messageEventSource.onerror=function(){errorHandle()};
+				startMSGButton.disabled = true;
 			}
-			function stop(){
-				displayTextArea.value += 'Disconnected...'+'\n';
-				eventSource.close();
-				startButton.disabled = false;
+			function startAdd(){
+				addEventSource = new EventSource("http://localhost:8080/EFOXNotification/notification?event=add");
+				addEventSource.onopen=open();
+				addEventSource.addEventListener("add", function(message){add(message)});
+				addEventSource.onerror=function(){errorHandle()};
+				startAddButton.disabled = true;
+			}
+			function stopMessage(){
+				displayTextArea.value = 'MSG Disconnected...'+'\n\n'+displayTextArea.value;
+				console.log('MSG Disconnected...');
+				messageEventSource.close();
+				startMSGButton.disabled = false;
+			}
+			function stopAdd(){
+				displayTextArea.value = 'Add Disconnected...'+'\n\n'+displayTextArea.value;
+				console.log('Add Disconnected...');
+				addEventSource.close();
+				startAddButton.disabled = false;
 			}
 			function clearText(){
 				displayTextArea.value = '';				
 			}
 			
 			function open(){
-				displayTextArea.value += 'Connected...'+'\n';
+				displayTextArea.value = 'Connected...'+'\n\n'+displayTextArea.value;
+				
+				console.log('Connected...');
+				
 			}
 			function stream(message){
-				displayTextArea.value = message.data+'\n\n'+displayTextArea.value;
+				displayTextArea.value = '[MSG]'+message.data+'\n\n'+displayTextArea.value;
+				console.log('[MSG]'+message.data);
 			}
 			function errorHandle(){
-				displayTextArea.value += 'Error Occured...'+'\n';
+				displayTextArea.value = 'Error Occured...'+'\n\n'+displayTextArea.value;
+				console.log('Error Occured...');
+			} 
+			function add(message){
+
+				displayTextArea.value = '[ADD]'+message.data+'\n\n'+displayTextArea.value;
+				console.log('[ADD]'+message.data);
 			}
 		</script>
 	</body>
