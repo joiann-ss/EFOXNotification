@@ -13,9 +13,9 @@
 			var eventSource = null;
 			function start(){
 				eventSource = new EventSource("http://localhost:8080/EFOXNotification/notification");
-				eventSource.onopen=function(){displayTextArea.value += 'Connected...'+'\n';};
-				eventSource.onmessage=function(message){displayTextArea.value += message.data+'\n\n';};
-				eventSource.onerror=function(){displayTextArea.value += 'Connected...'+'\n';};
+				eventSource.onopen=open();
+				eventSource.onmessage=steam(message);
+				eventSource.onerror=errorHandle();
 			}
 			function stop(){
 				eventSource.close();
@@ -23,6 +23,16 @@
 			}
 			function clearText(){
 				displayTextArea.value = '';				
+			}
+			
+			function open(){
+				displayTextArea.value += 'Connected...'+'\n';
+			}
+			function steam(message){
+				displayTextArea.value = message.data+'\n\n'+displayTextArea.value;
+			}
+			function errorHandle(){
+				displayTextArea.value += 'Error Occured...'+'\n';
 			}
 		</script>
 	</body>
