@@ -14,10 +14,11 @@
 			function start(){
 				eventSource = new EventSource("http://localhost:8080/EFOXNotification/notification");
 				eventSource.onopen=open();
-				eventSource.onmessage=steam(message);
-				eventSource.onerror=errorHandle();
+				eventSource.onmessage=function(message){stream(message)};
+				eventSource.onerror=function(){errorHandle()};
 			}
 			function stop(){
+				displayTextArea.value += 'Disconnected...'+'\n';
 				eventSource.close();
 				startButton.disabled = false;
 			}
@@ -28,7 +29,7 @@
 			function open(){
 				displayTextArea.value += 'Connected...'+'\n';
 			}
-			function steam(message){
+			function stream(message){
 				displayTextArea.value = message.data+'\n\n'+displayTextArea.value;
 			}
 			function errorHandle(){
