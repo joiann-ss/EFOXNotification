@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Home Page</title>
+	</head>
+	<body>
+		<button id="startButton" onclick="start()">Start</button><br>
+		<button id="stopButton" onclick="stop()">Stop</button><br>
+		<button id="clearButton" onclick="clearText()">Clear</button><br>
+		<textarea id="displayTextArea" readOnly="readOnly" row="40" and cols="60"></textarea><br>
+		<script>
+			var eventSource = null;
+			function start(){
+				eventSource = new EventSource("http://localhost:8080/EFOXNotification/notification");
+				eventSource.onopen=function(){displayTextArea.value += 'Connected...'+'\n';};
+				eventSource.onmessage=function(message){displayTextArea.value += message.data+'\n\n';};
+				eventSource.onerror=function(){displayTextArea.value += 'Connected...'+'\n';};
+			}
+			function stop(){
+				eventSource.close();
+				startButton.disabled = false;
+			}
+			function clearText(){
+				displayTextArea.value = '';				
+			}
+		</script>
+	</body>
+</html>
